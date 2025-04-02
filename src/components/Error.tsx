@@ -13,7 +13,10 @@ interface ErrorProps {
 
 export const Error: React.FC<ErrorProps> = ({ message, onRetry }) => {
   return (
-    <Box className="flex-1 justify-center items-center p-4 bg-antique">
+    <Box
+      testID="error-container"
+      className="flex-1 justify-center items-center p-4 bg-antique"
+    >
       <Box className="items-center gap-3">
         <AlertCircle size={48} color={colors.red} />
         <Text className="text-lg text-center font-medium">{message}</Text>

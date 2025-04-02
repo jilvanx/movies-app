@@ -42,6 +42,7 @@ export const MovieCard = ({
             className="w-full h-52 rounded-lg"
             resizeMode="cover"
             alt={title}
+            testID="movie-poster"
           />
 
           <Text
@@ -77,6 +78,7 @@ export const MovieCard = ({
               alt={title}
               size="full"
               className="flex-1"
+              testID="movie-poster"
             />
           </Box>
           <Box className="mx-3">
