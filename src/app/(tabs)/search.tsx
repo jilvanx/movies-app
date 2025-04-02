@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import { Box } from "@/components/ui/box";
 import { Text } from "@/components/ui/text";
@@ -27,7 +27,7 @@ const Search = () => {
 
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["search-movies", search],
-    queryFn: () => getMoviesOrTVShows({ query: search, type }),
+    queryFn: () => getMoviesOrTVShows({ query: search, type, page: 1 }),
     enabled: Boolean(search),
   });
 

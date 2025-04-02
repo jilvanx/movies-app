@@ -1,10 +1,9 @@
 import { ScrollView } from "react-native";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 
 import { Box } from "@/components/ui/box";
 import { Image } from "@/components/ui/image";
 import { images } from "@/constants/images";
-import { SearchBar } from "@/components/SearchBar";
 import { Loading } from "@/components/Loading";
 import { Error } from "@/components/Error";
 import { ListMovies } from "@/components/ListMovies";
@@ -25,9 +24,13 @@ export default function Index() {
     isLoading: isLoadingMovies,
     error: errorMovies,
     refetch: refetchMovies,
-  } = useQuery({
+    fetchNextPage: fetchNextPageMovies,
+  } = useInfiniteQuery({
     queryKey: ["top-rated-movies"],
-    queryFn: () => getMoviesOrTVShows({ query: "", type: "movie" }),
+    queryFn: ({ pageParam = 1 }) =>
+      getMoviesOrTVShows({ query: "", type: "movie", page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (_, pages) => pages.length + 1,
   });
 
   const {
@@ -35,9 +38,13 @@ export default function Index() {
     isLoading: isLoadingTVShows,
     error: errorTVShows,
     refetch: refetchTVShows,
-  } = useQuery({
+    fetchNextPage: fetchNextPageTVShows,
+  } = useInfiniteQuery({
     queryKey: ["top-rated-tv-shows"],
-    queryFn: () => getMoviesOrTVShows({ query: "", type: "tv" }),
+    queryFn: ({ pageParam = 1 }) =>
+      getMoviesOrTVShows({ query: "", type: "tv", page: pageParam }),
+    initialPageParam: 1,
+    getNextPageParam: (_, pages) => pages.length + 1,
   });
 
   const {
@@ -45,10 +52,18 @@ export default function Index() {
     isLoading: isLoadingMoviesAction,
     error: errorMoviesAction,
     refetch: refetchMoviesAction,
-  } = useQuery({
+    fetchNextPage: fetchNextPageMoviesAction,
+  } = useInfiniteQuery({
     queryKey: ["top-rated-movies-action"],
-    queryFn: () =>
-      getMoviesOrTVShows({ query: "", type: "movie", genre: Genre.Action }),
+    queryFn: ({ pageParam = 1 }) =>
+      getMoviesOrTVShows({
+        query: "",
+        type: "movie",
+        genre: Genre.Action,
+        page: pageParam,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (_, pages) => pages.length + 1,
   });
 
   const {
@@ -56,10 +71,18 @@ export default function Index() {
     isLoading: isLoadingMoviesAnimation,
     error: errorMoviesAnimation,
     refetch: refetchMoviesAnimation,
-  } = useQuery({
+    fetchNextPage: fetchNextPageMoviesAnimation,
+  } = useInfiniteQuery({
     queryKey: ["top-rated-movies-animation"],
-    queryFn: () =>
-      getMoviesOrTVShows({ query: "", type: "movie", genre: Genre.Animation }),
+    queryFn: ({ pageParam = 1 }) =>
+      getMoviesOrTVShows({
+        query: "",
+        type: "movie",
+        genre: Genre.Animation,
+        page: pageParam,
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (_, pages) => pages.length + 1,
   });
 
   if (
@@ -93,6 +116,23 @@ export default function Index() {
         onRetry={refetchMoviesAnimation}
       />
     );
+
+  const moviesResults = movies?.pages.flatMap((page) =>
+    page.results.filter((item): item is Movie => "title" in item)
+  ) as Movie[];
+
+  const tvShowsResults = tvShows?.pages.flatMap((page) =>
+    page.results.filter((item): item is TVSerie => "name" in item)
+  ) as TVSerie[];
+
+  const moviesActionResults = moviesAction?.pages.flatMap((page) =>
+    page.results.filter((item): item is Movie => "title" in item)
+  ) as Movie[];
+
+  const moviesAnimationResults = moviesAnimation?.pages.flatMap((page) =>
+    page.results.filter((item): item is Movie => "title" in item)
+  ) as Movie[];
+
   return (
     <Box className="flex-1 bg-antique">
       <ScrollView
@@ -110,25 +150,29 @@ export default function Index() {
 
         <ListMovies
           title="Most Popular Movies"
-          moviesAndTVSeries={movies?.results as Movie[]}
+          moviesAndTVSeries={moviesResults}
+          fetchNextPage={fetchNextPageMovies}
           isMovie
         />
 
         <ListMovies
           title="Most Popular TV Shows"
-          moviesAndTVSeries={tvShows?.results as TVSerie[]}
+          moviesAndTVSeries={tvShowsResults}
+          fetchNextPage={fetchNextPageTVShows}
           isMovie={false}
         />
 
         <ListMovies
           title="Most Popular Action Movies"
-          moviesAndTVSeries={moviesAction?.results as Movie[]}
+          moviesAndTVSeries={moviesActionResults}
+          fetchNextPage={fetchNextPageMoviesAction}
           isMovie
         />
 
         <ListMovies
           title="Most Popular Animation Movies"
-          moviesAndTVSeries={moviesAnimation?.results as Movie[]}
+          moviesAndTVSeries={moviesAnimationResults}
+          fetchNextPage={fetchNextPageMoviesAnimation}
           isMovie
         />
       </ScrollView>

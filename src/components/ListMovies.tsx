@@ -12,12 +12,14 @@ interface ListMoviesProps {
   moviesAndTVSeries: Movie[] | TVSerie[];
   isMovie: boolean;
   title: string;
+  fetchNextPage: () => void;
 }
 
 export const ListMovies = ({
   moviesAndTVSeries,
   isMovie,
   title,
+  fetchNextPage,
 }: ListMoviesProps) => {
   const { screenWidth } = values;
 
@@ -41,6 +43,8 @@ export const ListMovies = ({
         maxToRenderPerBatch={10}
         windowSize={10}
         showsHorizontalScrollIndicator={false}
+        onEndReached={fetchNextPage}
+        onEndReachedThreshold={0.5}
       />
     </Box>
   );

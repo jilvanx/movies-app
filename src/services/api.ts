@@ -16,15 +16,17 @@ export const getMoviesOrTVShows = async ({
   query = "",
   type = "movie",
   genre = null,
+  page = 1,
 }: {
   query: string;
   type: "movie" | "tv";
   genre?: Genre | null;
+  page: number;
 }) => {
   const response = query
     ? await api.get(`/search/${type}?query=${encodeURIComponent(query)}`)
     : await api.get(
-        `/discover/${type}?sort_by=popularity.desc${
+        `/discover/${type}?sort_by=popularity.desc&page=${page}${
           genre ? `&with_genres=${genre}` : ""
         }`
       );
